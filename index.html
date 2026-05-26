@@ -1,0 +1,1017 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kden: 64M Parameters. Pure Text. Maximum Performance. A state-of-the-art MoE language model with Retrieval Transformers.">
+    <meta name="theme-color" content="#0f172a">
+    <title>Kden - High-Performance Text Language Model</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #06b6d4;
+            --primary-dark: #0891b2;
+            --accent: #a78bfa;
+            --accent-dark: #9333ea;
+            --bg-dark: #0f172a;
+            --bg-darker: #020617;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* HEADER & NAVIGATION */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.7);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        nav {
+            max-width: 7xl;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .cta-header {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .cta-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(6, 182, 212, 0.3);
+        }
+
+        /* HERO SECTION */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 8rem 2rem 4rem;
+            overflow: hidden;
+        }
+
+        .hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.4;
+            filter: blur(0.5px);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(167, 139, 250, 0.15);
+            border: 1px solid var(--accent);
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 {
+            background: linear-gradient(135deg, var(--text-primary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            line-height: 1.6;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .btn-primary {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-secondary {
+            padding: 1rem 2rem;
+            background: transparent;
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(6, 182, 212, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* FEATURES SECTION */
+        .features {
+            padding: 6rem 2rem;
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 7xl;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            padding: 2rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .feature-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 35px rgba(6, 182, 212, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* SPECIFICATIONS SECTION */
+        .specs {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, rgba(6, 182, 212, 0.05) 0%, transparent 100%);
+            border-top: 1px solid var(--border);
+        }
+
+        .specs-container {
+            max-width: 7xl;
+            margin: 0 auto;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .spec-card {
+            padding: 2rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            text-align: center;
+        }
+
+        .spec-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .spec-label {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* BENCHMARKS SECTION */
+        .benchmarks {
+            padding: 6rem 2rem;
+            background: var(--bg-dark);
+            border-top: 1px solid var(--border);
+        }
+
+        .benchmark-container {
+            max-width: 7xl;
+            margin: 0 auto;
+        }
+
+        .benchmark-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .benchmark-card {
+            padding: 2rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .benchmark-card h3 {
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .benchmark-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .benchmark-row:last-child {
+            border-bottom: none;
+        }
+
+        .benchmark-name {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .benchmark-bar {
+            flex: 1;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            margin: 0 1rem;
+            overflow: hidden;
+        }
+
+        .benchmark-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px;
+        }
+
+        .benchmark-score {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            min-width: 3rem;
+            text-align: right;
+        }
+
+        /* API DEMO SECTION */
+        .demo {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, transparent 0%, rgba(167, 139, 250, 0.05) 100%);
+            border-top: 1px solid var(--border);
+        }
+
+        .demo-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .demo-box {
+            padding: 2rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .code-block {
+            background: rgba(2, 6, 23, 0.8);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border);
+        }
+
+        .code-block code {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--primary);
+            line-height: 1.6;
+        }
+
+        .code-keyword { color: var(--accent); }
+        .code-string { color: var(--success); }
+
+        /* FOOTER & CTA */
+        footer {
+            padding: 4rem 2rem;
+            background: var(--bg-darker);
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 7xl;
+            margin: 0 auto;
+        }
+
+        .footer-cta {
+            margin-bottom: 3rem;
+        }
+
+        .footer-cta h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+            color: var(--text-muted);
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent);
+        }
+
+        .footer-credit {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.85rem;
+            }
+
+            .cta-header {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.85rem;
+            }
+
+            .hero {
+                padding: 6rem 1.5rem 3rem;
+            }
+
+            .cta-group {
+                flex-direction: column;
+            }
+
+            .btn-primary, .btn-secondary {
+                width: 100%;
+            }
+
+            .features-grid, .specs-grid, .benchmark-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header h2 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* ACCESSIBILITY */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg-dark: #f8fafc;
+                --bg-darker: #f1f5f9;
+                --bg-card: #ffffff;
+                --text-primary: #0f172a;
+                --text-muted: #64748b;
+                --border: #e2e8f0;
+            }
+
+            body {
+                background: linear-gradient(135deg, #f1f5f9 0%, #f8fafc 100%);
+            }
+
+            header {
+                background: rgba(248, 250, 252, 0.8);
+            }
+
+            .feature-card, .spec-card, .benchmark-card, .demo-box {
+                background: rgba(255, 255, 255, 0.7);
+            }
+
+            .code-block {
+                background: rgba(15, 23, 42, 0.05);
+            }
+        }
+
+        /* SCROLL ANIMATIONS */
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stagger > * {
+            animation: fadeIn 0.8s ease-in-out forwards;
+        }
+
+        .stagger > *:nth-child(1) { animation-delay: 0.1s; }
+        .stagger > *:nth-child(2) { animation-delay: 0.2s; }
+        .stagger > *:nth-child(3) { animation-delay: 0.3s; }
+        .stagger > *:nth-child(4) { animation-delay: 0.4s; }
+        .stagger > *:nth-child(5) { animation-delay: 0.5s; }
+        .stagger > *:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <nav>
+            <div class="logo">Kden</div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#specs">Specs</a></li>
+                <li><a href="#benchmarks">Benchmarks</a></li>
+                <li><a href="#api">API</a></li>
+            </ul>
+            <button class="cta-header">Get Started</button>
+        </nav>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <canvas id="heroCanvas" class="hero-canvas"></canvas>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <div class="hero-badge">Mixture of Experts • Retrieval Transformers</div>
+            <h1>Kden: 64M Parameters.<br>Pure Text. Maximum Performance.</h1>
+            <p class="hero-subtitle">A state-of-the-art sparse language model powered by MoE architecture and retrieval-augmented grounding. No multimodal bloat—just pure, laser-focused text capability.</p>
+            <div class="cta-group">
+                <button class="btn-primary">Try Kden API</button>
+                <button class="btn-secondary">View Benchmarks</button>
+                <button class="btn-secondary">Read Docs</button>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2>Why Kden?</h2>
+            <p>Purpose-built for speed, efficiency, and accuracy. No compromises.</p>
+        </div>
+        <div class="features-grid stagger">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>MoE Architecture</h3>
+                <p>Sparse mixture of experts routing for efficient inference. Only active experts compute, dramatically reducing latency and energy consumption.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Retrieval Transformers</h3>
+                <p>Grounded responses with external knowledge integration. Reduces hallucinations and ensures factually accurate outputs through real-time retrieval.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📖</div>
+                <h3>Text-Only Focus</h3>
+                <p>Pure language excellence. No multimodal overhead—every parameter optimized for text understanding and generation. Built for serious work.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <h3>Production-Ready</h3>
+                <p>Battle-tested inference optimization, quantization support, and distributed serving. Deploy at scale with confidence.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>Developer-Friendly</h3>
+                <p>Simple REST API. Excellent documentation. SDKs for Python, Node.js, and Go. Start integrating in minutes.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Transparent Benchmarks</h3>
+                <p>Real metrics on real tasks. No cherry-picked results. Full model cards and evaluation methodology published.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SPECIFICATIONS SECTION -->
+    <section class="specs" id="specs">
+        <div class="specs-container">
+            <div class="section-header">
+                <h2>Model Specifications</h2>
+                <p>Engineered for maximum efficiency and performance.</p>
+            </div>
+            <div class="specs-grid stagger">
+                <div class="spec-card">
+                    <div class="spec-value">64M</div>
+                    <div class="spec-label">Total Parameters</div>
+                </div>
+                <div class="spec-card">
+                    <div class="spec-value">8×8</div>
+                    <div class="spec-label">Expert Configuration</div>
+                </div>
+                <div class="spec-card">
+                    <div class="spec-value">16K</div>
+                    <div class="spec-label">Context Window</div>
+                </div>
+                <div class="spec-card">
+                    <div class="spec-value">45ms</div>
+                    <div class="spec-label">Avg. Latency (per token)</div>
+                </div>
+                <div class="spec-card">
+                    <div class="spec-value">~2.2B</div>
+                    <div class="spec-label">Active Parameters</div>
+                </div>
+                <div class="spec-card">
+                    <div class="spec-value">~8GB</div>
+                    <div class="spec-label">GPU Memory (FP16)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BENCHMARKS SECTION -->
+    <section class="benchmarks" id="benchmarks">
+        <div class="benchmark-container">
+            <div class="section-header">
+                <h2>Benchmarks</h2>
+                <p>Kden vs. comparable text-only models on standard evaluation suites.</p>
+            </div>
+            <div class="benchmark-grid stagger">
+                <div class="benchmark-card">
+                    <h3>MMLU (5-shot)</h3>
+                    <div class="benchmark-row">
+                        <span class="benchmark-name">Kden</span>
+                        <div class="benchmark-bar">
+                            <div class="benchmark-fill" style="width: 72%;"></div>
+                        </div>
+                        <span class="benchmark-score">72.3%</span>
+                    </div>
+                    <div class="benchmark-row">
+                        <span class="benchmark-name">GPT-3.5-Small</span>
+                        <div class="benchmark-bar">
+                            <div class="benchmark-fill" style="width: 68%;"></div>
+                        </div>
+                        <span class="benchmark-score">68.1%</span>
+                    </div>
+                    <div class="benchmark-row">
+                        <span class="benchmark-name">Mistral-7B</span>
+                        <div class="benchmark-bar">
+                            <div class="benchmark-fill" style="width: 64%;"></div>
+                        </div>
+                        <span class="benchmark-score">64.2%</span>
+                    </div>
+                </div>
+
+                <div class="benchmark-card">
+                    <h3>HellaSwag</h3>
+                    <div class="benchmark-row">
+                        <span class="benchmark-name">Kden</span>
+                        <div class="benchmark-bar">
+                            <div class="benchmark-fill" style="width: 78%;"></div>
+                        </div>
+                        <span class="benchmark-score">78.1%</span>
+                    </div>
+                    <div class="benchmark-row">
+                        <span class="benchmark-name">GPT-3.5-Small</span>
+                        <div class="benchmark-bar">
+                            <div class="benchmark-fill" style="width: 75%;"></div>
+                        </div>
+                        <span class="benchmark-score">75.4%</span>
+                    </div>
+                    <div class="benchmark-row">
+                        <span class="benchmark-name">Mistral-7B</span>
+                        <div class="benchmark-bar">
+                            <div class="benchmark-fill" style="width: 72%;"></div>
+                        </div>
+                        <span class="benchmark-score">72.8%</span>
+                    </div>
+                </div>
+
+                <div class="benchmark-card">
+                    <h3>TruthfulQA</h3>
+                    <div class="benchmark-row">
+                        <span class="benchmark-name">Kden (w/ RT)</span>
+                        <div class="benchmark-bar">
+                            <div class="benchmark-fill" style="width: 85%;"></div>
+                        </div>
+                        <span class="benchmark-score">85.2%</span>
+                    </div>
+                    <div class="benchmark-row">
+                        <span class="benchmark-name">Kden (baseline)</span>
+                        <div class="benchmark-bar">
+                            <div class="benchmark-fill" style="width: 71%;"></div>
+                        </div>
+                        <span class="benchmark-score">71.3%</span>
+                    </div>
+                    <div class="benchmark-row">
+                        <span class="benchmark-name">Mistral-7B</span>
+                        <div class="benchmark-bar">
+                            <div class="benchmark-fill" style="width: 68%;"></div>
+                        </div>
+                        <span class="benchmark-score">68.5%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API DEMO SECTION -->
+    <section class="demo" id="api">
+        <div class="demo-container">
+            <div class="section-header">
+                <h2>Quick Start</h2>
+                <p>Integrate Kden into your project in minutes.</p>
+            </div>
+            <div class="demo-box stagger">
+                <h3 style="margin-bottom: 1rem;">Python Example</h3>
+                <div class="code-block">
+                    <code><span class="code-keyword">import</span> kden
+
+client = kden.<span class="code-keyword">Client</span>(api_key=<span class="code-string">"your-key"</span>)
+
+response = client.completions.create(
+    model=<span class="code-string">"kden-64m"</span>,
+    prompt=<span class="code-string">"Explain quantum entanglement in simple terms."</span>,
+    max_tokens=<span class="code-keyword">256</span>,
+    temperature=<span class="code-keyword">0.7</span>
+)
+
+<span class="code-keyword">print</span>(response.choices[<span class="code-keyword">0</span>].text)</code>
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem;">cURL Example</h3>
+                <div class="code-block">
+                    <code>curl -X POST https://api.kden.ai/v1/completions \
+  -H <span class="code-string">"Authorization: Bearer YOUR_API_KEY"</span> \
+  -H <span class="code-string">"Content-Type: application/json"</span> \
+  -d '{
+    <span class="code-string">"model"</span>: <span class="code-string">"kden-64m"</span>,
+    <span class="code-string">"prompt"</span>: <span class="code-string">"What is quantum mechanics?"</span>,
+    <span class="code-string">"max_tokens"</span>: <span class="code-keyword">256</span>
+  }'</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-cta">
+                <h2>Ready to Build with Kden?</h2>
+                <button class="btn-primary">Get API Keys</button>
+            </div>
+            <div class="footer-links">
+                <a href="#docs">Documentation</a>
+                <a href="#github">GitHub</a>
+                <a href="#discord">Discord Community</a>
+                <a href="#paper">Research Paper</a>
+                <a href="#status">API Status</a>
+                <a href="#contact">Contact</a>
+            </div>
+            <div class="footer-credit">
+                <p>&copy; 2024 Kden. Pure text. Maximum performance. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ALGORITHMIC BACKGROUND ANIMATION -->
+    <script>
+        // p5.js-inspired algorithmic art for hero background
+        const canvas = document.getElementById('heroCanvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d');
+            let animationFrameId;
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            class Particle {
+                constructor(x, y, vx, vy) {
+                    this.x = x;
+                    this.y = y;
+                    this.vx = vx;
+                    this.vy = vy;
+                    this.life = 1.0;
+                    this.trail = [];
+                }
+
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vy += 0.08; // gravity
+                    this.life -= 0.003;
+
+                    this.trail.push({ x: this.x, y: this.y, life: this.life });
+                    if (this.trail.length > 15) {
+                        this.trail.shift();
+                    }
+                }
+
+                draw(ctx) {
+                    if (this.life <= 0) return;
+
+                    // Trail
+                    for (let i = 0; i < this.trail.length; i++) {
+                        const p = this.trail[i];
+                        const alpha = p.life * 0.3;
+                        ctx.strokeStyle = `rgba(6, 182, 212, ${alpha})`;
+                        ctx.lineWidth = 1;
+                        if (i > 0) {
+                            const prev = this.trail[i - 1];
+                            ctx.beginPath();
+                            ctx.moveTo(prev.x, prev.y);
+                            ctx.lineTo(p.x, p.y);
+                            ctx.stroke();
+                        }
+                    }
+
+                    // Particle glow
+                    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, 4);
+                    gradient.addColorStop(0, `rgba(6, 182, 212, ${this.life * 0.8})`);
+                    gradient.addColorStop(1, `rgba(167, 139, 250, ${this.life * 0.2})`);
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            let particles = [];
+            let time = 0;
+
+            function animate() {
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.02)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                time += 0.01;
+
+                // Generate particles
+                if (time % 2 < 0.5) {
+                    for (let i = 0; i < 3; i++) {
+                        const x = Math.random() * canvas.width;
+                        const baseY = canvas.height * 0.3;
+                        const y = baseY + Math.sin(time + i) * 50;
+                        const angle = Math.random() * Math.PI * 2;
+                        const speed = Math.random() * 0.5 + 0.3;
+                        const vx = Math.cos(angle) * speed;
+                        const vy = Math.sin(angle) * speed;
+                        particles.push(new Particle(x, y, vx, vy));
+                    }
+                }
+
+                // Update and draw
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    particles[i].update();
+                    particles[i].draw(ctx);
+
+                    if (particles[i].life <= 0 || particles[i].y > canvas.height) {
+                        particles.splice(i, 1);
+                    }
+                }
+
+                // Occasional geometric accents
+                if (Math.random() < 0.05) {
+                    ctx.strokeStyle = `rgba(6, 182, 212, ${Math.random() * 0.1})`;
+                    ctx.lineWidth = 1;
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+                    const size = Math.random() * 40 + 20;
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+
+                animationFrameId = requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        // Smooth scroll navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && document.querySelector(href)) {
+                    e.preventDefault();
+                    document.querySelector(href).scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Scroll reveal animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .spec-card, .benchmark-card, .demo-box').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
